@@ -1,18 +1,11 @@
 import express from "express";
 const router = express.Router();
-import supabase from "../config.js";
-
-import * as dotenv from "dotenv";
-dotenv.config();
+import supabase from "../utils/config.js";
+import getUser from "../utils/login.js";
 
 router.get("/", async function (req, res, next) {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: process.env.USER_EMAIL,
-      password: process.env.USER_PASSWORD,
-    });
-    const user_id = data.session.user.id;
-
+    const user_id = await getUser();
     const { data: books, error2 } = await supabase
       .from("books")
       .select()

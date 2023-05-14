@@ -1,5 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config();
 import supabase from "./config.js";
 
 export default async function getUser(email, password) {

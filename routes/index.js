@@ -59,4 +59,23 @@ router.get("/reading", async function (req, res) {
   }
 });
 
+router.get("/toread", async function (req, res) {
+  try {
+    const { email, password } = req.body;
+    const user_id = await getUser(email, password);
+
+    if (!user_id) throw new Error("User not found");
+
+    const { data: books, error } = await supabase
+      .from("books")
+      .select()
+      .eq("owner", user_id)
+      .eq("status", "to-read");
+
+    res.json(books);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 export default router;

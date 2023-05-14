@@ -3,9 +3,13 @@ const router = express.Router();
 import supabase from "../utils/config.js";
 import getUser from "../utils/login.js";
 
-router.get("/", async function (req, res, next) {
+router.get("/", async function (req, res) {
   try {
-    const user_id = await getUser();
+    const { email, password } = req.body;
+    const user_id = await getUser(email, password);
+
+    if (!user_id) throw new Error("User not found");
+
     const { data: books, error } = await supabase
       .from("books")
       .select()
@@ -17,9 +21,13 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-router.get("/read", async function (req, res, next) {
+router.get("/read", async function (req, res) {
   try {
-    const user_id = await getUser();
+    const { email, password } = req.body;
+    const user_id = await getUser(email, password);
+
+    if (!user_id) throw new Error("User not found");
+
     const { data: books, error } = await supabase
       .from("books")
       .select()
@@ -32,9 +40,13 @@ router.get("/read", async function (req, res, next) {
   }
 });
 
-router.get("/reading", async function (req, res, next) {
+router.get("/reading", async function (req, res) {
   try {
-    const user_id = await getUser();
+    const { email, password } = req.body;
+    const user_id = await getUser(email, password);
+
+    if (!user_id) throw new Error("User not found");
+
     const { data: books, error } = await supabase
       .from("books")
       .select()

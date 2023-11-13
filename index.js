@@ -1,16 +1,18 @@
-import express from "express";
-import indexRouter from "./routes/index.js";
-const router = express.Router();
+const express = require("express");
+const dotenv = require("dotenv");
 const port = 3000;
+
+const { createClient } = require("./lib/supabase");
 
 const app = express();
 
-app.use(express.json());
+app.get("/books", async function (req, res, next) {
+  const supabase = createClient({ req, res });
 
-app.use("/", indexRouter);
-
-app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}`);
+  const { data } = await supabase.from("books").select("*");
+  res.json(data);
 });
 
-export default app;
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});

@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import express from "express";
+import get_user_id_from_username from "./lib/get_user_id_from_username.js";
 dotenv.config();
 
 const app = express();
@@ -12,14 +13,19 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-app.get("/read", async function (req, res) {
+app.get("/:username/read", async function (req, res) {
+  const user_id = await get_user_id_from_username(
+    supabase,
+    req.params.username
+  );
+
   const { data, error } = await supabase
     .from("books")
     .select()
-    .eq("owner", "3c43aa5c-66ee-4c7d-9731-1c5431a16283")
+    .eq("owner", user_id)
     .eq("status", "read")
     .order("updated_at", { ascending: false })
-    .limit(10);
+    .limit(1);
 
   if (error) throw error;
 

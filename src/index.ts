@@ -78,7 +78,7 @@ router.get("/read", async function (req, res) {
     .eq("owner", user_id)
     .eq("status", "read")
     .order("finished", { ascending: false })
-    .limit(15);
+    .limit(10);
 
   if (error) throw error;
 
@@ -94,7 +94,7 @@ router.get("/to-read", async function (req, res) {
     .eq("owner", user_id)
     .eq("status", "to-read")
     .order("updated_at", { ascending: false })
-    .limit(15);
+    .limit(5);
 
   if (error) throw error;
 

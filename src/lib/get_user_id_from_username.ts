@@ -1,4 +1,6 @@
-export default async function (supabase, username) {
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+export default async function (supabase: SupabaseClient, username: string) {
   try {
     const { data, error } = await supabase
       .from("users")
@@ -8,7 +10,7 @@ export default async function (supabase, username) {
 
     if (error) throw error;
 
-    return data.id;
+    return data.id as string;
   } catch (error) {
     console.log(error);
   }

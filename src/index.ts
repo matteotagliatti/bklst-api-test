@@ -9,8 +9,8 @@ const app = express();
 const port = 3000;
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_URL as string,
+  process.env.SUPABASE_ANON_KEY as string
 );
 
 app.get("/:username/read", async function (req, res) {

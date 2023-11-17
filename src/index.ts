@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import get_user_id_from_username from "./lib/get_user_id_from_username.js";
 import { Database } from "./types/supabase.js";
 dotenv.config();
@@ -15,9 +15,12 @@ const supabase = createClient<Database>(
   process.env.SUPABASE_ANON_KEY as string
 );
 
+/**
+ * Middleware to check if the user exists
+ */
 app.use(
   "/:username",
-  async function (req: Request, res: Response, next: NextFunction) {
+  async function (req, res, next) {
     const user_id = await get_user_id_from_username(
       supabase,
       req.params.username
@@ -32,8 +35,11 @@ app.use(
   router
 );
 
-router.get("/", async function (req: Request, res: Response) {
-  const user_id = res.locals.user_id;
+/**
+ * User Routes
+ */
+router.get("/", async function (req, res) {
+  const user_id = res.locals.user_id as string;
 
   const { data, error } = await supabase
     .from("books")
@@ -48,7 +54,7 @@ router.get("/", async function (req: Request, res: Response) {
 });
 
 router.get("/reading", async function (req, res) {
-  const user_id = res.locals.user_id;
+  const user_id = res.locals.user_id as string;
 
   const { data, error } = await supabase
     .from("books")
@@ -64,7 +70,7 @@ router.get("/reading", async function (req, res) {
 });
 
 router.get("/read", async function (req, res) {
-  const user_id = res.locals.user_id;
+  const user_id = res.locals.user_id as string;
 
   const { data, error } = await supabase
     .from("books")
@@ -80,7 +86,7 @@ router.get("/read", async function (req, res) {
 });
 
 router.get("/to-read", async function (req, res) {
-  const user_id = res.locals.user_id;
+  const user_id = res.locals.user_id as string;
 
   const { data, error } = await supabase
     .from("books")

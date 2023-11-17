@@ -1,48 +1,31 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const port = 3000;
-
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+import express from "express";
 dotenv.config();
-
-const { createClient } = require("./lib/supabase");
 
 const app = express();
 
-app.get("/auth/confirm", async function (req, res) {
-  const token_hash = req.query.token_hash;
-  const type = req.query.type;
-  const next = req.query.next ?? "/";
+const port = 3000;
 
-  if (token_hash && type) {
-    const supabase = createClient({ req, res });
-    const { error } = await supabase.auth.verifyOtp({
-      type,
-      token_hash,
-    });
-    if (!error) {
-      res.redirect(303, `/${next.slice(1)}`);
-    }
-  }
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
-  throw new Error("Invalid token");
-});
+app.get("/read", async function (req, res) {
+  const { data, error } = await supabase
+    .from("books")
+    .select()
+    .eq("owner", "3c43aa5c-66ee-4c7d-9731-1c5431a16283")
+    .eq("status", "read")
+    .order("updated_at", { ascending: false })
+    .limit(10);
 
-app.get("/auth/signin", async function (req, res) {
-  const supabase = createClient({ req, res });
+  if (error) throw error;
 
-  console.log(supabase);
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email: req.query.email,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  res.redirect(303, `/auth/confirm?type=signin&next=${req.query.next}`);
+  res.send(data);
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Listening at http://localhost:${port}`);
 });

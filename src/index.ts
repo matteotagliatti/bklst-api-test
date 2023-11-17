@@ -13,6 +13,43 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY as string
 );
 
+app.get("/:username/", async function (req, res) {
+  const user_id = await get_user_id_from_username(
+    supabase,
+    req.params.username
+  );
+
+  const { data, error } = await supabase
+    .from("books")
+    .select()
+    .eq("owner", user_id)
+    .order("updated_at", { ascending: false })
+    .limit(25);
+
+  if (error) throw error;
+
+  res.send(data);
+});
+
+app.get("/:username/reading", async function (req, res) {
+  const user_id = await get_user_id_from_username(
+    supabase,
+    req.params.username
+  );
+
+  const { data, error } = await supabase
+    .from("books")
+    .select()
+    .eq("owner", user_id)
+    .eq("status", "reading")
+    .order("updated_at", { ascending: false })
+    .limit(5);
+
+  if (error) throw error;
+
+  res.send(data);
+});
+
 app.get("/:username/read", async function (req, res) {
   const user_id = await get_user_id_from_username(
     supabase,
@@ -24,8 +61,27 @@ app.get("/:username/read", async function (req, res) {
     .select()
     .eq("owner", user_id)
     .eq("status", "read")
+    .order("finished", { ascending: false })
+    .limit(15);
+
+  if (error) throw error;
+
+  res.send(data);
+});
+
+app.get("/:username/to-read", async function (req, res) {
+  const user_id = await get_user_id_from_username(
+    supabase,
+    req.params.username
+  );
+
+  const { data, error } = await supabase
+    .from("books")
+    .select()
+    .eq("owner", user_id)
+    .eq("status", "to-read")
     .order("updated_at", { ascending: false })
-    .limit(1);
+    .limit(15);
 
   if (error) throw error;
 
